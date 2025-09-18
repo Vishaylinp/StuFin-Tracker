@@ -4,6 +4,7 @@ import { auth } from './services/firebase.js';
 import { onAuthStateChanged } from "firebase/auth";
 import { signUp, logIn } from './services/auth.js';
 import { addTransaction } from './components/form.js';
+import { renderTransactionList } from './components/transactionList.js';
 
 // Place the authentication listener at the top level of the script.
 // This acts as the central control for your app's state.
@@ -11,7 +12,7 @@ onAuthStateChanged(auth, (user) => {
     if (user) {
         // User is logged in! This is where we show the main dashboard.
         console.log("User is logged in:", user.email);
-        
+        renderTransactionList('transaction-list');
         // Call a function to display the main app UI and fetch data.
         // For example: initDashboard(user);
 
@@ -27,8 +28,6 @@ onAuthStateChanged(auth, (user) => {
 // Use a single `DOMContentLoaded` listener for initial UI setup.
 // This runs once the HTML is fully loaded.
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('StuFin Tracker app loaded!');
-
     const authForm = document.getElementById('authForm');
     if (authForm) {
         authForm.addEventListener('submit', async (e) => {
@@ -69,4 +68,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    renderTransactionList('transaction-list');
 });

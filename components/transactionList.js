@@ -1,4 +1,50 @@
-// components/transactionList.js - Placeholder for transaction list display
+import { db } from "../services/firebase.js";
+import { collection, query, onSnapshot, orderBy } from "firebase/firestore";
 
-// TODO: Implement functions to render and update the list of transactions.
-// Example: function renderTransactionList(transactions) { ... }
+const calculateBalance = (transactions) => {
+  let balance = 0;
+  transactions.forEach(transaction => {
+    if (transaction.type === 'income') {
+      balance += transaction.amount;
+    } else if (transaction.type === 'expense') {
+      balance -= transaction.amount;
+    }
+  });
+  return balance;
+};
+
+export const renderTransactionList = (containerId) => {
+  const container = document.getElementById(containerId);
+  const balanceSpan = document.getElementById('balance');
+
+  if (!container) {
+    console.error(`Container with ID ${containerId} not found.`);
+    return;
+  }
+
+  const q = query(collection(db, "transactions"), orderBy("timestamp", "desc"));
+
+  onSnapshot(q, (snapshot) => {
+    container.innerHTML = ""; // Clear existing list items
+    const transactions = [];
+    snapshot.forEach((doc) => {
+      const transaction = doc.data();
+      transactions.push(transaction);
+      const listItem = document.createElement("li");
+      listItem.className = "list-group-item d-flex justify-content-between align-items-center";
+      listItem.innerHTML = `
+        <div>
+          ${transaction.description} (<span class="text-${transaction.type === 'income' ? 'success' : 'danger'}">${transaction.type}</span>)
+        </div>
+        <span class="badge bg-${transaction.type === 'income' ? 'success' : 'danger'} rounded-pill">$${transaction.amount.toFixed(2)}</span>
+      `;
+      container.appendChild(listItem);
+    });
+
+    // Update balance
+    if (balanceSpan) {
+      const currentBalance = calculateBalance(transactions);
+      balanceSpan.textContent = `$${currentBalance.toFixed(2)}`;
+    }
+  });
+};

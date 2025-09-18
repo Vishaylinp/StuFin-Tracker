@@ -33,20 +33,22 @@ document.addEventListener('DOMContentLoaded', () => {
     if (authForm) {
         authForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const email = authForm.emailInput.value;
-            const password = authForm.passwordInput.value;
+            const email = document.getElementById('emailInput').value;
+            const password = document.getElementById('passwordInput').value;
+            
+            // Add basic validation
+            if (!email || !password) {
+                console.error('Please fill in all fields');
+                return;
+            }
 
-            let result = await logIn(email, password);
+            // Determine intent based on button clicked or separate forms
+            const result = await logIn(email, password);
             if (result.success) {
-                console.log('Logged in!');
+                console.log('Logged in successfully!');
             } else {
-                console.log('Login failed, attempting to sign up...');
-                result = await signUp(email, password);
-                if (result.success) {
-                    console.log('Account created and logged in!');
-                } else {
-                    console.error('Sign up failed:', result.error);
-                }
+                console.error('Login failed:', result.error);
+                // Let users explicitly choose to sign up
             }
         });
     }

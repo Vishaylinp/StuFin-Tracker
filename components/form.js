@@ -1,5 +1,18 @@
-// components/form.js - Placeholder for income/expense forms
+import { db } from "../services/firebase.js";
+import { addDoc, collection, Timestamp } from "firebase/firestore";
 
-// TODO: Implement functions to render and handle income and expense forms.
-// Example: function renderIncomeForm() { ... }
-// Example: function renderExpenseForm() { ... }
+export const addTransaction = async (type, amount, description) => {
+  try {
+    await addDoc(collection(db, "transactions"), {
+      type,
+      amount: parseFloat(amount),
+      description,
+      timestamp: Timestamp.now(),
+    });
+    console.log("Transaction added!");
+    return { success: true };
+  } catch (error) {
+    console.error("Error adding transaction: ", error);
+    return { success: false, error: error.message };
+  }
+};

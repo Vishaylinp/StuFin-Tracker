@@ -1,6 +1,12 @@
 /* Basic styles for StuFin Tracker */
 body {
-    padding-top: 56px; /* Adjust for fixed navbar */
+    padding-top: 0px; /* Adjust for fixed navbar */
+    background-color: #f8f9fa;
+}
+
+.card {
+    max-width: 500px;
+    margin: 0 auto;
 }
 
 /* Add your custom styles here */

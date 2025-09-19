@@ -1,6 +1,3 @@
-import { db } from "../services/firebase.js";
-import { collection, query, onSnapshot, orderBy } from "firebase/firestore";
-
 const calculateBalance = (transactions) => {
   let balance = 0;
   transactions.forEach(transaction => {
@@ -13,7 +10,7 @@ const calculateBalance = (transactions) => {
   return balance;
 };
 
-export const renderTransactionList = (containerId) => {
+const renderTransactionList = (containerId) => {
   const container = document.getElementById(containerId);
   const balanceSpan = document.getElementById('balance');
 
@@ -22,9 +19,9 @@ export const renderTransactionList = (containerId) => {
     return;
   }
 
-  const q = query(collection(db, "transactions"), orderBy("timestamp", "desc"));
+  const q = window.db.collection("transactions").orderBy("timestamp", "desc");
 
-  onSnapshot(q, (snapshot) => {
+  q.onSnapshot((snapshot) => {
     container.innerHTML = ""; // Clear existing list items
     const transactions = [];
     snapshot.forEach((doc) => {
@@ -48,3 +45,6 @@ export const renderTransactionList = (containerId) => {
     }
   });
 };
+
+// Make function globally accessible
+window.renderTransactionList = renderTransactionList;

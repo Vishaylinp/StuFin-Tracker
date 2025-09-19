@@ -1,18 +1,11 @@
 // app.js - Main application logic
-
-import { auth } from './services/firebase.js';
-import { onAuthStateChanged } from "firebase/auth";
-import { signUp, logIn } from './services/auth.js';
-import { addTransaction } from './components/form.js';
-import { renderTransactionList } from './components/transactionList.js';
-
 // Place the authentication listener at the top level of the script.
 // This acts as the central control for your app's state.
-onAuthStateChanged(auth, (user) => {
+window.auth.onAuthStateChanged((user) => {
     if (user) {
         // User is logged in! This is where we show the main dashboard.
         console.log("User is logged in:", user.email);
-        renderTransactionList('transaction-list');
+        window.renderTransactionList('transaction-list');
         // Call a function to display the main app UI and fetch data.
         // For example: initDashboard(user);
 
@@ -28,7 +21,9 @@ onAuthStateChanged(auth, (user) => {
 // Use a single `DOMContentLoaded` listener for initial UI setup.
 // This runs once the HTML is fully loaded.
 document.addEventListener('DOMContentLoaded', () => {
+    console.log("DOMContentLoaded fired.");
     const authForm = document.getElementById('authForm');
+    console.log("authForm element:", authForm);
     if (authForm) {
         authForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -42,10 +37,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             // Determine intent based on button clicked or separate forms
-            const result = await logIn(email, password);
+            const result = await window.logIn(email, password);
             if (result.success) {
                 console.log('Logged in successfully!');
-                renderTransactionList('transaction-list');
+                window.renderTransactionList('transaction-list');
             } else {
                 console.error('Login failed:', result.error);
                 // Let users explicitly choose to sign up
@@ -55,7 +50,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const signUpButton = document.getElementById('signUpButton');
     if (signUpButton) {
-        signUpButton.addEventListener('click', async () => {
+        signUpButton.addEventListener('click', async (e) => {
+            e.preventDefault();
             const email = document.getElementById('emailInput').value;
             const password = document.getElementById('passwordInput').value;
 
@@ -64,10 +60,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            const result = await signUp(email, password);
+            const result = await window.signUp(email, password);
             if (result.success) {
                 console.log('Signed up successfully!');
-                renderTransactionList('transaction-list');
+                window.renderTransactionList('transaction-list');
             } else {
                 console.error('Sign up failed:', result.error);
             }
@@ -82,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const amount = transactionForm.amount.value;
             const description = transactionForm.description.value;
 
-            const result = await addTransaction(type, amount, description);
+            const result = await window.addTransaction(type, amount, description);
             if (result.success) {
                 transactionForm.reset();
             } else {

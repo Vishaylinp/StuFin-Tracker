@@ -1,13 +1,11 @@
-import { db } from "../services/firebase.js";
-import { addDoc, collection, Timestamp } from "firebase/firestore";
 
-export const addTransaction = async (type, amount, description) => {
+ const addTransaction = async (type, amount, description) => {
   try {
-    await addDoc(collection(db, "transactions"), {
+    await firebase.firestore().collection("transactions").add({
       type,
       amount: parseFloat(amount),
       description,
-      timestamp: Timestamp.now(),
+      timestamp: firebase.firestore.Timestamp.now(),
     });
     console.log("Transaction added!");
     return { success: true };
@@ -16,3 +14,6 @@ export const addTransaction = async (type, amount, description) => {
     return { success: false, error: error.message };
   }
 };
+
+// Make the function globally accessible
+window.addTransaction = addTransaction;

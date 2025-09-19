@@ -45,9 +45,31 @@ document.addEventListener('DOMContentLoaded', () => {
             const result = await logIn(email, password);
             if (result.success) {
                 console.log('Logged in successfully!');
+                renderTransactionList('transaction-list');
             } else {
                 console.error('Login failed:', result.error);
                 // Let users explicitly choose to sign up
+            }
+        });
+    }
+
+    const signUpButton = document.getElementById('signUpButton');
+    if (signUpButton) {
+        signUpButton.addEventListener('click', async () => {
+            const email = document.getElementById('emailInput').value;
+            const password = document.getElementById('passwordInput').value;
+
+            if (!email || !password) {
+                console.error('Please fill in all fields for sign up');
+                return;
+            }
+
+            const result = await signUp(email, password);
+            if (result.success) {
+                console.log('Signed up successfully!');
+                renderTransactionList('transaction-list');
+            } else {
+                console.error('Sign up failed:', result.error);
             }
         });
     }
@@ -68,6 +90,4 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-
-    renderTransactionList('transaction-list');
 });

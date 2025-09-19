@@ -19,7 +19,17 @@ const renderTransactionList = (containerId) => {
     return;
   }
 
-  const q = window.db.collection("transactions").orderBy("timestamp", "desc");
+  const user = window.auth.currentUser;
+  if (!user) {
+    console.error("No user logged in. Cannot render transaction list.");
+    container.innerHTML = ""; // Clear any existing list items if user logs out
+    if (balanceSpan) {
+      balanceSpan.textContent = "$0.00"; // Reset balance
+    }
+    return;
+  }
+
+  const q = window.db.collection("transactions").where("uid", "==", user.uid).orderBy("timestamp", "desc");
 
   q.onSnapshot((snapshot) => {
     container.innerHTML = ""; // Clear existing list items

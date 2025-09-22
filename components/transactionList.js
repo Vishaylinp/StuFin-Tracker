@@ -1,3 +1,14 @@
+/**
+ * @file Manages the display and calculation of financial transactions.
+ * @author [Your Name/Team Name]
+ */
+
+/**
+ * Calculates the net balance from a list of transactions.
+ *
+ * @param {Array<object>} transactions - An array of transaction objects, each with 'type' (income/expense) and 'amount' properties.
+ * @returns {number} The calculated net balance.
+ */
 const calculateBalance = (transactions) => {
   let balance = 0;
   transactions.forEach(transaction => {
@@ -10,6 +21,14 @@ const calculateBalance = (transactions) => {
   return balance;
 };
 
+/**
+ * Renders a list of transactions to a specified container and updates the balance display.
+ *
+ * @param {string} containerId - The ID of the HTML element where the transaction list will be rendered.
+ * @sideEffects - Modifies the DOM by adding transaction list items and updating the balance display.
+ *                Fetches transaction data from Firestore based on the current user's UID.
+ *                Logs errors to the console if the container is not found or no user is logged in.
+ */
 const renderTransactionList = (containerId) => {
   const container = document.getElementById(containerId);
   const balanceSpan = document.getElementById('balance');

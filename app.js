@@ -1,27 +1,43 @@
 // app.js - Main application logic
-// Place the authentication listener at the top level of the script.
-// This acts as the central control for your app's state.
-window.auth.onAuthStateChanged((user) => {
-    if (user) {
-        // User is logged in! This is where we show the main dashboard.
-        console.log("User is logged in:", user.email);
-        window.renderTransactionList('transaction-list');
-        // Call a function to display the main app UI and fetch data.
-        // For example: initDashboard(user);
-
-    } else {
-        // No user is logged in. This is where we show the login/signup page.
-        console.log("No user is logged in.");
-        
-        // Call a function to display the login/signup forms.
-        // For example: showLoginForms();
-    }
-});
 
 // Use a single `DOMContentLoaded` listener for initial UI setup.
 // This runs once the HTML is fully loaded.
 document.addEventListener('DOMContentLoaded', () => {
     console.log("DOMContentLoaded fired.");
+
+    // Get references to DOM elements
+    const loginForm = document.getElementById('login-form');
+    const signupForm = document.getElementById('signup-form');
+    const dashboard = document.getElementById('dashboard');
+    const transactionList = document.getElementById('transaction-list');
+    const logoutButton = document.getElementById('logout-button');
+
+    // Place the authentication listener inside DOMContentLoaded.
+    // This acts as the central control for your app's state.
+    window.auth.onAuthStateChanged((user) => {
+        if (user) {
+            // User is logged in! This is where we show the main dashboard.
+            console.log("User is logged in:", user.email);
+            // if (logoutButton) logoutButton.style.display = 'block'; // Show logout button
+            if (dashboard) dashboard.style.display = 'block'; // Show dashboard
+            if (loginForm) loginForm.style.display = 'none'; // Hide login form
+            if (signupForm) signupForm.style.display = 'none'; // Hide signup form
+            window.renderTransactionList('transaction-list');
+            // Call a function to display the main app UI and fetch data.
+            // For example: initDashboard(user);
+
+        } else {
+            // No user is logged in. This is where we show the login/signup page.
+            console.log("No user is logged in.");
+            // if (logoutButton) logoutButton.style.display = 'none'; // Hide logout button
+            if (dashboard) dashboard.style.display = 'none'; // Hide dashboard
+            if (loginForm) loginForm.style.display = 'block'; // Show login form
+            if (signupForm) signupForm.style.display = 'block'; // Show signup form
+            // Call a function to display the login/signup forms.
+            // For example: showLoginForms();
+        }
+    });
+
     const authForm = document.getElementById('authForm');
     console.log("authForm element:", authForm);
     if (authForm) {
@@ -70,19 +86,32 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    const transactionForm = document.getElementById('transactionForm');
-    if (transactionForm) {
-        transactionForm.addEventListener('submit', async (e) => {
+    const transactionFormElement = document.getElementById('transactionForm');
+    if (transactionFormElement) {
+        transactionFormElement.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const type = transactionForm.type.value;
-            const amount = transactionForm.amount.value;
-            const description = transactionForm.description.value;
+            const type = transactionFormElement.type.value;
+            const amount = transactionFormElement.amount.value;
+            const description = transactionFormElement.description.value;
 
             const result = await window.addTransaction(type, amount, description);
             if (result.success) {
-                transactionForm.reset();
+                transactionFormElement.reset();
             } else {
                 console.error('Failed to add transaction:', result.error);
+            }
+        });
+    }
+
+    // Removed duplicate DOM element references
+    if (logoutButton) {
+        logoutButton.addEventListener('click', async () => {
+            try {
+                await window.auth.signOut();
+                console.log("User signed out successfully.");
+                // The onAuthStateChanged listener will handle UI updates
+            } catch (error) {
+                console.error("Error signing out:", error);
             }
         });
     }
